@@ -59,3 +59,7 @@ export const FloatButtonArea = styled.TouchableOpacity`
     background-color: #8aa29e;
     padding: 10px;    
 `;
+
+export const LoadingIcon = styled.ActivityIndicator`
+    margin-top: 30px;
+`;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { RootSiblingParent } from 'react-native-root-siblings';
 import {NavigationContainer} from '@react-navigation/native';
 
 import UserContextProvider from './src/contexts/UserContext';
@@ -8,9 +9,11 @@ export default () => {
 
   return (
     <UserContextProvider>
-      <NavigationContainer>
-        <MainStack />
-      </NavigationContainer>
+      <RootSiblingParent>
+        <NavigationContainer>
+          <MainStack />
+        </NavigationContainer>
+      </RootSiblingParent>
     </UserContextProvider>
   );
 }

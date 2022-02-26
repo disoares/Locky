@@ -27,34 +27,6 @@ export default () => {
 
                 if(docSnap.exists()){
 
-                    const data = [
-                        {
-                            type: 'Login',
-                            site: 'Google',
-                            user: 'soaressd01@gmail.com',
-                            pass: '12345678'
-                        }, 
-                        {
-                            type: 'Login',
-                            site: 'Microsoft',
-                            user: 'soaressd01@gmail.com',
-                            pass: '12345678'
-                        }, 
-                        {
-                            type: 'Login',
-                            site: 'Amazon',
-                            user: 'soaressd01@gmail.com',
-                            pass: '12345678'
-                        }, 
-                        {
-                            type: 'Login',
-                            site: 'HBO',
-                            user: 'soaressd01@gmail.com',
-                            pass: '12345678'
-                        }, 
-                    ];
-                    await AsyncStorage.setItem('@passes', JSON.stringify(data));
-
                     userDispatch({
                         type: 'setUser',
                         payload: {
@@ -68,7 +40,9 @@ export default () => {
                     });
                 }
             }else{
-                console.log('não existe');
+                navigation.reset({
+                    routes: [{name: 'SignIn'}]
+                });
             }
         }
 
