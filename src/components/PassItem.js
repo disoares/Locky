@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/native';
 import Toast from 'react-native-root-toast';
 import {FontAwesome } from '@expo/vector-icons';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { 
+    hasHardwareAsync,
+    isEnrolledAsync,
+    authenticateAsync 
+ } from 'expo-local-authentication';
 import { deleteDoc, doc } from 'firebase/firestore/lite';
 import db from './../config/firebaseconfig';
 
@@ -74,27 +80,86 @@ const PlainText = styled.Text`
 export default ({id, employee, type, pass, setId, setEmployee, setType, setPass, setShowModal, setTitleModal, updPasses, setUpdPasses, setShowModalView}) => {
 
     const[showAlert, setShowAlert] = useState(false);
+    const[showSupportedAlert, setShowSupportedAlert] = useState(false);
+    const[isSupported, setIsSupported] = useState(false);
+    const[permission, setPermission] = useState(false);
 
-    const handleView = () => {
-        setEmployee(employee)
-        setType(type)
-        setPass(pass)
-        setShowModalView(true);
+    useEffect(async () => {
+        const compatible = await hasHardwareAsync()
+        if (compatible){
+            setIsSupported(true);
+        }
+    }, []);
+
+    const handleView = async () => {
+
+        let show = false;
+
+        if(!isSupported && !permission){
+            setShowSupportedAlert(true);
+        }else if(!isSupported && permission){
+            show = true;
+        }else{
+            const result = await authenticateAsync();
+            if (result.success){
+                show = true;
+            }
+        }
+
+        if(show){
+            setEmployee(employee)
+            setType(type)
+            setPass(pass)
+            setShowModalView(true);
+        }
+
     }
 
-    const handleEdit = (id, employee, type, pass) => {
+    const handleEdit = async (id, employee, type, pass) => {
 
-        setId(id)
-        setEmployee(employee)
-        setType(type)
-        setPass(pass)
+        let show = false;
 
-        setShowModal(true);
-        setTitleModal('Editar senha');
+        if(!isSupported && !permission){
+            setShowSupportedAlert(true);
+        }else if(!isSupported && permission){
+            show = true;
+        }else{
+            const result = await authenticateAsync();
+            if (result.success){
+                show = true;
+            }
+        }
+
+        if(show){
+            setId(id)
+            setEmployee(employee)
+            setType(type)
+            setPass(pass)
+    
+            setShowModal(true);
+            setTitleModal('Editar senha');
+        }
+
     }
 
-    const handleDelete = () => {
-        setShowAlert(true);
+    const handleDelete = async () => {
+
+        let show = false;
+
+        if(!isSupported && !permission){
+            setShowSupportedAlert(true);
+        }else if(!isSupported && permission){
+            show = true;
+        }else{
+            const result = await authenticateAsync();
+            if (result.success){
+                show = true;
+            }
+        }
+
+        if(show){
+            setShowAlert(true);
+        }        
     }
 
     const handleDeleteConfirm = async () => {
@@ -123,6 +188,7 @@ export default ({id, employee, type, pass, setId, setEmployee, setType, setPass,
     
     const hideAlert = () => {
         setShowAlert(false);
+        setShowSupportedAlert(false);
     };
 
     return (
@@ -164,7 +230,22 @@ export default ({id, employee, type, pass, setId, setEmployee, setType, setPass,
                 confirmText="Quero excluir!"
                 confirmButtonColor="#db5461"
                 onCancelPressed={hideAlert}
-                onConfirmPressed={handleDeleteConfirm}
+                onConfirmPressed={handleDeleteConfirm} 
+            />
+            <AwesomeAlert
+                show={showSupportedAlert}
+                showProgress={false}
+                title="A biometria não está ativada ou não é suportada."
+                message="Isso torna o app menos seguro. Deseja continuar?"
+                closeOnTouchOutside={true}
+                closeOnHardwareBackPress={false}
+                showCancelButton={true}
+                showConfirmButton={true}
+                cancelText="Não"
+                confirmText="Sim"
+                confirmButtonColor="#db5461"
+                onCancelPressed={hideAlert}
+                onConfirmPressed={t => setPermission(true)}
             />
         </Area>
     );
