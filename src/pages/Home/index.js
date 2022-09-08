@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {StatusBar} from 'react-native';
-import {FontAwesome } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {collection, getDocs, query, where} from 'firebase/firestore/lite';
+import { collection, getDocs, query, where } from 'firebase/firestore/lite';
 import db from './../../config/firebaseconfig';
 
-import {Container, Title, SearchArea, SearchInput, PassArea, ScrollView, FalseView, FloatButtonArea, LoadingIcon} from './styles';
+import { Container, Title, SearchArea, SearchInput, PassArea, ScrollView, FalseView, FloatButtonArea, LoadingIcon } from './styles';
 
 import PassItem from './../../components/PassItem';
 import Modal from '../../components/Modal';
@@ -13,30 +13,30 @@ import ModalView from '../../components/ModalView';
 
 export default () => {
 
-    const[updPasses, setUpdPasses] = useState(0);
-    const[loading, setLoading] = useState(true);
+    const [updPasses, setUpdPasses] = useState(0);
+    const [loading, setLoading] = useState(true);
 
-    const[search, setSearch] = useState('');        
-    const[arrPass, setArrPass] = useState([]);
+    const [search, setSearch] = useState('');
+    const [arrPass, setArrPass] = useState([]);
 
-    const[showModal, setShowModal] = useState(false);
-    const[showModalView, setShowModalView] = useState(false);
-    const[titleModal, setTitleModal] = useState('');
-    const[id, setId] = useState('');
-    const[employee, setEmployee] = useState('');
-    const[type, setType] = useState('');
-    const[pass, setPass] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showModalView, setShowModalView] = useState(false);
+    const [titleModal, setTitleModal] = useState('');
+    const [id, setId] = useState('');
+    const [employee, setEmployee] = useState('');
+    const [type, setType] = useState('');
+    const [pass, setPass] = useState('');
 
     useEffect(() => {
         const getPasses = async () => {
 
-            if(search === ''){
+            if (search === '') {
                 setArrPass([]);
                 setLoading(true);
 
                 const uid = await AsyncStorage.getItem('@uid');
-                if(uid){
-                    const q = query(collection(db, 'passes'), where('uid', '==', uid));
+                if (uid) {
+                    const q = query(collection(db, `passes`), where('uid', '==', uid));
                     const getPasses = await getDocs(q);
 
                     let passes = [];
@@ -51,7 +51,7 @@ export default () => {
                     setArrPass(passes);
                     setLoading(false);
                 }
-            }else{
+            } else {
                 const filterPasses = arrPass.filter(s => s.employee.toLowerCase().indexOf(search.toLowerCase()) > -1);
                 setArrPass(filterPasses);
             }
@@ -81,52 +81,52 @@ export default () => {
                 {arrPass.length > 0 ?
                     <PassArea>
                         {arrPass.map((item, key) => (
-                            <PassItem 
-                                key={key} 
-                                id={item.id} 
-                                employee={item.employee} 
-                                type={item.type} 
-                                pass={item.pass} 
+                            <PassItem
+                                key={key}
+                                id={item.id}
+                                employee={item.employee}
+                                type={item.type}
+                                pass={item.pass}
                                 setId={setId}
                                 setEmployee={setEmployee}
                                 setType={setType}
                                 setPass={setPass}
-                                setShowModal={setShowModal} 
-                                setTitleModal={setTitleModal} 
+                                setShowModal={setShowModal}
+                                setTitleModal={setTitleModal}
                                 updPasses={updPasses}
                                 setUpdPasses={setUpdPasses}
-                                setShowModalView={setShowModalView} 
+                                setShowModalView={setShowModalView}
                             />
-                        ))}                        
+                        ))}
                     </PassArea>
                     :
                     (loading &&
-                    <LoadingIcon size='large' color='#f1edee' />)
+                        <LoadingIcon size='large' color='#f1edee' />)
                 }
                 <FalseView />
             </ScrollView>
             <FloatButtonArea onPress={handleOpenModal}>
                 <FontAwesome name='plus' size={24} color="#f1edee" />
             </FloatButtonArea>
-            <Modal 
-                showModal={showModal} 
-                setShowModal={setShowModal} 
-                title={titleModal} 
-                id={id} 
-                employee={employee} 
-                type={type} 
+            <Modal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                title={titleModal}
+                id={id}
+                employee={employee}
+                type={type}
                 pass={pass}
-                setEmployee={setEmployee} 
-                setType={setType} 
-                setPass={setPass} 
+                setEmployee={setEmployee}
+                setType={setType}
+                setPass={setPass}
                 updPasses={updPasses}
                 setUpdPasses={setUpdPasses}
             />
-            <ModalView 
+            <ModalView
                 showModal={showModalView}
-                setShowModal={setShowModalView} 
-                employee={employee} 
-                type={type} 
+                setShowModal={setShowModalView}
+                employee={employee}
+                type={type}
                 pass={pass}
             />
         </Container>

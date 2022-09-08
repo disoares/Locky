@@ -80,6 +80,8 @@ export default () => {
                                 const docRef = doc(db, 'users', uid);
                                 const payload = {name: name, email: email};
 
+                                await AsyncStorage.setItem(uid, '@key');
+
                                 await setDoc(docRef, payload)
                                 .then(async () => {
 

@@ -3,10 +3,10 @@ import styled from 'styled-components/native';
 import Toast from 'react-native-root-toast';
 import {FontAwesome } from '@expo/vector-icons';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import * as LocalAuthentication from 'expo-local-authentication';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { decrypt } from 'react-native-simple-encryption';
 import { 
     hasHardwareAsync,
-    isEnrolledAsync,
     authenticateAsync 
  } from 'expo-local-authentication';
 import { deleteDoc, doc } from 'firebase/firestore/lite';
@@ -95,49 +95,55 @@ export default ({id, employee, type, pass, setId, setEmployee, setType, setPass,
 
         let show = false;
 
-        if(!isSupported && !permission){
-            setShowSupportedAlert(true);
-        }else if(!isSupported && permission){
-            show = true;
-        }else{
-            const result = await authenticateAsync();
-            if (result.success){
+        const key = await AsyncStorage.getItem('@key');
+        if(key){
+            if(!isSupported && !permission){
+                setShowSupportedAlert(true);
+            }else if(!isSupported && permission){
                 show = true;
+            }else{
+                const result = await authenticateAsync();
+                if (result.success){
+                    show = true;
+                }
+            }
+
+            if(show){
+                setEmployee(employee)
+                setType(type)
+                setPass(decrypt(key, pass))
+                setShowModalView(true);
             }
         }
-
-        if(show){
-            setEmployee(employee)
-            setType(type)
-            setPass(pass)
-            setShowModalView(true);
-        }
-
     }
 
     const handleEdit = async (id, employee, type, pass) => {
 
         let show = false;
+        console.log('aqui')
 
-        if(!isSupported && !permission){
-            setShowSupportedAlert(true);
-        }else if(!isSupported && permission){
-            show = true;
-        }else{
-            const result = await authenticateAsync();
-            if (result.success){
+        const key = await AsyncStorage.getItem('@key');
+        if(key){
+            if(!isSupported && !permission){
+                setShowSupportedAlert(true);
+            }else if(!isSupported && permission){
                 show = true;
+            }else{
+                const result = await authenticateAsync();
+                if (result.success){
+                    show = true;
+                }
             }
-        }
 
-        if(show){
-            setId(id)
-            setEmployee(employee)
-            setType(type)
-            setPass(pass)
-    
-            setShowModal(true);
-            setTitleModal('Editar senha');
+            if(show){
+                setId(id)
+                setEmployee(employee)
+                setType(type)
+                setPass(decrypt(key, pass))
+        
+                setShowModal(true);
+                setTitleModal('Editar senha');
+            }
         }
 
     }

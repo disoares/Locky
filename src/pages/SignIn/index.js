@@ -59,6 +59,7 @@ export default () => {
             const docSnap = await getDoc(docRef);
             if(docSnap.exists()){
 
+                await AsyncStorage.setItem('@key', uid);
                 await AsyncStorage.setItem('@uid', uid);
                 userDispatch({
                     type: 'setUser',

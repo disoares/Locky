@@ -3,9 +3,19 @@
     "name": "Locky",
     "slug": "Locky",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/logo.png",
     "assetBundlePatterns": [
       "**/*"
     ]
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./src/assets/logo.png",
+      "backgroundColor": "#3d5467"
+    },
+    "package": "br.com.locky",
+    "versionCode": 1
   },
   "name": "Locky",
   "packagerOpts": {

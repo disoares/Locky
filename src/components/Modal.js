@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import styled from "styled-components/native";
 import {MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { encrypt } from "react-native-simple-encryption";
 import {addDoc, collection, doc, setDoc } from 'firebase/firestore/lite';
 import db from './../config/firebaseconfig';
 
@@ -89,8 +90,8 @@ export default ({showModal, setShowModal, title, id, employee, type, pass, setEm
     const[loading, setLoading] = useState(false);
 
     const handleSavePass = async () => {
-
-        const uid = await AsyncStorage.getItem('@uid');
+        
+        const uid = await AsyncStorage.getItem('@uid');        
         if(uid){
             if(employee === ''){
                 alert('Campo "Empresa" é obrigatório');
@@ -106,57 +107,63 @@ export default ({showModal, setShowModal, title, id, employee, type, pass, setEm
 
             if(id === '' || id === undefined){
 
-                const collectionRef = collection(db, 'passes');
-                const payload = {
-                    uid: uid,
-                    employee: employee,
-                    type: type,
-                    pass: pass
-                };
-                await addDoc(collectionRef, payload)
-                .then((res) => {
+                const key = await AsyncStorage.getItem('@key');
+                if(key){
+                    const collectionRef = collection(db, 'passes');
+                    const payload = {
+                        uid: uid,
+                        employee: employee,
+                        type: type,
+                        pass: encrypt(key, pass)
+                    };
+                    await addDoc(collectionRef, payload)
+                    .then((res) => {
 
-                    Toast.show('Senha salva com sucesso!', {
-                        duration: Toast.durations.SHORT,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0
+                        Toast.show('Senha salva com sucesso!', {
+                            duration: Toast.durations.SHORT,
+                            position: Toast.positions.BOTTOM,
+                            shadow: true,
+                            animation: true,
+                            hideOnPress: true,
+                            delay: 0
+                        });
+
+                        setShowModal(false);
+
+                    })
+                    .catch(err => {
+                        alert('Houve um erro. Tente de novo.');
                     });
-
-                    setShowModal(false);
-
-                })
-                .catch(err => {
-                    alert('Houve um erro. Tente de novo.');
-                });
+                }
 
             }else{
 
-                const docRef = doc(db, 'passes', id);
-                const payload = {
-                    uid: uid,
-                    employee: employee,
-                    type: type,
-                    pass: pass
-                };
-                await setDoc(docRef, payload)
-                .then((res) => {
-                    Toast.show('Senha salva com sucesso!', {
-                        duration: Toast.durations.SHORT,
-                        position: Toast.positions.BOTTOM,
-                        shadow: true,
-                        animation: true,
-                        hideOnPress: true,
-                        delay: 0
-                    });
+                const key = await AsyncStorage.getItem('@key');
+                if(key){
+                    const docRef = doc(db, 'passes', id);
+                    const payload = {
+                        uid: uid,
+                        employee: employee,
+                        type: type,
+                        pass: encrypt(key, pass)
+                    };
+                    await setDoc(docRef, payload)
+                    .then((res) => {
+                        Toast.show('Senha salva com sucesso!', {
+                            duration: Toast.durations.SHORT,
+                            position: Toast.positions.BOTTOM,
+                            shadow: true,
+                            animation: true,
+                            hideOnPress: true,
+                            delay: 0
+                        });
 
-                    setShowModal(false);
-                })
-                .catch(err => {
-                    alert('Houve um erro. Tente de novo.');
-                });
+                        setShowModal(false);
+                    })
+                    .catch(err => {
+                        alert('Houve um erro. Tente de novo.');
+                    });
+                }
 
             }
 

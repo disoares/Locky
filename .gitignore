@@ -55,4 +55,3 @@ web-build/
 dist/
 
 .env
-src/config/firebaseconfig.js
