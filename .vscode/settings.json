@@ -3,5 +3,6 @@
     "cSpell.words": [
         "firestore",
         "Pressable"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

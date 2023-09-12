@@ -10,4 +10,22 @@ export default {
     FIREBASE_SENDER: '1012602760889',
     FIREBASE_APP_ID: '1:1012602760889:web:6029a36edb19daf7b43568'
   },
+  "android": {
+    "package": "com.dhyeggo.locky"
+  },
+  "plugins": [
+    [
+      "expo-build-properties",
+      {
+        "android": {
+          "compileSdkVersion": 31,
+          "targetSdkVersion": 31,
+          "buildToolsVersion": "31.0.0"
+        },
+        "ios": {
+          "deploymentTarget": "13.0"
+        }
+      }
+    ]
+  ]
 };
